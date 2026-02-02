@@ -2,11 +2,38 @@ name: Version Report
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - master
 
 jobs:
   report:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Hello
-        run: echo "Workflow funcionando"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate version report
+        run: |
+          echo "Node:" > versions.txt
+          node -v >> versions.txt
+
+          echo "" >> versions.txt
+          echo "NPM:" >> versions.txt
+          npm -v >> versions.txt
+
+          echo "" >> versions.txt
+          echo "Java:" >> versions.txt
+          java -version >> versions.txt 2>&1 || echo "Java not installed" >> versions.txt
+
+          echo "" >> versions.txt
+          echo "Python:" >> versions.txt
+          python --version >> versions.txt 2>&1 || echo "Python not installed" >> versions.txt
+
+      - name: Save report as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: version-report
+          path: versions.txt
 
