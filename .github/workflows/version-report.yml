@@ -1,0 +1,12 @@
+name: Version Report
+
+on:
+  workflow_dispatch:
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hello
+        run: echo "Workflow funcionando"
+
