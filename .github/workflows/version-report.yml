@@ -2,38 +2,40 @@ name: Version Report
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - master
 
 jobs:
-  report:
+  scan:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Generate version report
+      - name: Detectar runtimes reais
         run: |
-          echo "Node:" > versions.txt
-          node -v >> versions.txt
+          echo "REPO=${{ github.repository }}" > report.txt
 
-          echo "" >> versions.txt
-          echo "NPM:" >> versions.txt
-          npm -v >> versions.txt
+          if command -v python >/dev/null; then
+            echo "Python:" >> report.txt
+            python --version >> report.txt
+          fi
 
-          echo "" >> versions.txt
-          echo "Java:" >> versions.txt
-          java -version >> versions.txt 2>&1 || echo "Java not installed" >> versions.txt
+          if command -v node >/dev/null; then
+            echo "Node:" >> report.txt
+            node -v >> report.txt
+          fi
 
-          echo "" >> versions.txt
-          echo "Python:" >> versions.txt
-          python --version >> versions.txt 2>&1 || echo "Python not installed" >> versions.txt
+          if command -v java >/dev/null; then
+            echo "Java:" >> report.txt
+            java -version >> report.txt 2>&1
+          fi
 
-      - name: Save report as artifact
+          grep -i postgres -R . || true
+          grep -i mysql -R . || true
+          grep -i mongo -R . || true
+
+      - name: Salvar resultado
         uses: actions/upload-artifact@v4
         with:
           name: version-report
-          path: versions.txt
+          path: report.txt
 
