@@ -34,7 +34,7 @@ jobs:
           grep -i mongo -R . || true
 
       - name: Salvar resultado
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: version-report
           path: report.txt
